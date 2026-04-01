@@ -330,7 +330,7 @@ const D = {
   ]
 };
 
-let SCRIPT_URL = localStorage.getItem('ph-script-url') || '';
+let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwquaEYqksXt63uw-o1Rnd1XD9x46LyDxQ-3DNJWlLKh_xKHsrBJSuJNSR1iphTk0xTKg/exec';
 let isAdmin=false, panelOpen=false;
 let content={...D}, fb={fbTitle:D.fbTitle,fbIntro:D.fbIntro,questions:D.questions};
 let responses=[], storedPW='admin';
@@ -360,7 +360,7 @@ function setSyncStatus(msg, ok=true) {
 
 async function init() {
   if (!SCRIPT_URL) {
-    document.getElementById('setupBanner').classList.add('show');
+    
     renderPublic(); return;
   }
   const data = await apiGet('getAll');
