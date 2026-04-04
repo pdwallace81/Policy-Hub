@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шкільна Політика</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1b3252;--navy2:#142540;--amber:#c4620d;--amber2:#e8a83a;--bg:#f6f4ef;--bg2:#eceae3;--white:#fff;--text:#252525;--muted:#666;--border:#d8d4c8;--green:#2a7a4b;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;line-height:1.7}
+#loadingOverlay{position:fixed;inset:0;background:var(--navy);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:1.25rem;transition:opacity .4s ease}
+#loadingOverlay.fade-out{opacity:0;pointer-events:none}
+.load-flag{font-size:3rem}
+.load-text{font-size:1.05rem;font-weight:600;color:rgba(255,255,255,.85)}
+.load-sub{font-size:.8rem;color:rgba(255,255,255,.4)}
+.load-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.18);border-top-color:var(--amber2);border-radius:50%;animation:spin .7s linear infinite}
+.load-error{display:none;background:rgba(196,98,13,.25);border:1px solid rgba(196,98,13,.4);border-radius:5px;padding:.75rem 1.25rem;font-size:.85rem;color:#ffb380;text-align:center;max-width:340px;line-height:1.5}
+@keyframes spin{to{transform:rotate(360deg)}}
+.site-header{background:var(--navy);color:#fff;padding:2.75rem 2rem 2.25rem;position:relative;overflow:hidden}
+.site-header::before{content:'';position:absolute;top:-60px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.03)}
+.site-header::after{content:'';position:absolute;bottom:-100px;left:30px;width:240px;height:240px;border-radius:50%;background:rgba(196,98,13,.12)}
+.header-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.header-main{flex:1}
+.lang-switcher{display:flex;gap:.4rem;flex-shrink:0;padding-top:.25rem}
+.lang-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;padding:.32rem .65rem;border-radius:4px;font-size:.75rem;font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s;display:flex;align-items:center;gap:.3rem;font-family:'Source Sans 3',sans-serif}
+.lang-btn:hover{background:rgba(255,255,255,.25)}
+.lang-btn.active{background:var(--amber);border-color:var(--amber)}
+.district-tag{font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--amber2);margin-bottom:.6rem}
+.policy-title{font-family:'Lora',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.2;margin-bottom:.5rem}
+.policy-meta{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.84rem;color:rgba(255,255,255,.52);margin-top:.8rem}
+.fb-jump-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;background:var(--amber);color:#fff;padding:.65rem 1.4rem;border-radius:5px;font-weight:700;font-size:.9rem;text-decoration:none;transition:background .2s,transform .15s;width:fit-content}
+.fb-jump-btn:hover{background:#e07520;transform:translateY(-1px)}
+#bannerSection{display:none}
+#bannerSection.show{display:block}
+.banner-img{width:100%;max-height:320px;object-fit:cover;display:block}
+.main-wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.section{margin-bottom:2.75rem;animation:fadeUp .45s ease both}
+.sec-label{font-size:.67rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:.45rem}
+.sec-heading{font-family:'Lora',serif;font-size:1.42rem;color:var(--navy);padding-bottom:.6rem;border-bottom:2px solid var(--border);margin-bottom:1rem}
+.overview-text{font-size:1.01rem;color:#363636;line-height:1.88}
+.resources-grid{display:flex;flex-direction:column;gap:.75rem;margin-top:.25rem}
+.resource-primary{display:flex;align-items:center;gap:1.1rem;background:var(--navy);color:#fff;border-radius:6px;padding:1.25rem 1.4rem;text-decoration:none;transition:background .2s,transform .15s}
+.resource-primary:hover{background:#24426b;transform:translateY(-1px)}
+.rp-icon{font-size:1.6rem;flex-shrink:0}.rp-body{flex:1}
+.rp-label{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2);margin-bottom:.18rem}
+.rp-title{font-weight:700;font-size:1rem;line-height:1.3}
+.rp-desc{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:.15rem}
+.rp-arrow{font-size:1.1rem;opacity:.55;flex-shrink:0}
+.resource-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.resource-link{display:flex;align-items:center;gap:.7rem;background:var(--white);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:4px;padding:.8rem 1rem;text-decoration:none;color:var(--text);transition:box-shadow .15s,transform .15s}
+.resource-link:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.rl-icon{font-size:1.15rem;flex-shrink:0}.rl-body{flex:1;min-width:0}
+.rl-title{font-weight:700;font-size:.88rem;color:var(--navy)}.rl-desc{font-size:.75rem;color:var(--muted)}
+.pillars-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1rem;margin-top:1rem}
+.pillar{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:4px;padding:1.2rem;transition:transform .2s,box-shadow .2s}
+.pillar:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.pillar-icon{font-size:1.5rem;margin-bottom:.4rem}
+.pillar-title{font-weight:700;color:var(--navy);font-size:.92rem;margin-bottom:.3rem}
+.pillar-desc{font-size:.82rem;color:var(--muted);line-height:1.55}
+.faq-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.25rem}
+.faq-item{background:var(--white);border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.faq-q{display:flex;align-items:center;gap:.75rem;padding:1rem 1.1rem;cursor:pointer;font-weight:700;font-size:.96rem;color:var(--navy);user-select:none;transition:background .15s}
+.faq-q:hover{background:var(--bg2)}
+.faq-chevron{margin-left:auto;font-size:.85rem;transition:transform .25s;flex-shrink:0;color:var(--amber)}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 1.1rem 1rem;font-size:.93rem;color:#444;line-height:1.75;border-top:1px solid var(--border)}
+.faq-item.open .faq-a{display:block}
+.fb-section{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:2rem;margin-top:2.5rem}
+.q-block{margin-bottom:1.65rem}
+.q-text{font-weight:700;color:var(--navy);margin-bottom:.65rem;font-size:.96rem}
+.opt-list{list-style:none;display:flex;flex-direction:column;gap:.38rem}
+.opt-list label{display:flex;align-items:center;gap:.52rem;cursor:pointer;font-size:.91rem;padding:.35rem .52rem;border-radius:4px;transition:background .15s}
+.opt-list label:hover{background:var(--bg)}
+.opt-list input[type=radio],.opt-list input[type=checkbox]{accent-color:var(--amber);width:15px;height:15px;flex-shrink:0}
+.rating-row{display:flex;gap:.42rem;flex-wrap:wrap}
+.r-btn{width:42px;height:42px;border:2px solid var(--border);border-radius:50%;background:var(--white);cursor:pointer;font-weight:700;font-size:.92rem;color:var(--muted);transition:all .15s;display:flex;align-items:center;justify-content:center;font-family:'Source Sans 3',sans-serif}
+.r-btn.on,.r-btn:hover{border-color:var(--amber);background:var(--amber);color:#fff}
+.r-labels{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:.28rem;max-width:260px}
+.likert-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.25rem}
+.likert-opt{flex:1;min-width:80px;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.likert-opt input[type=radio]{display:none}
+.likert-btn{width:100%;padding:.45rem .3rem;border:2px solid var(--border);border-radius:5px;background:var(--white);font-size:.75rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.3;cursor:pointer;transition:all .15s;font-family:'Source Sans 3',sans-serif}
+.likert-opt input[type=radio]:checked + .likert-btn,.likert-btn:hover{border-color:var(--amber);background:var(--amber);color:#fff}
+.fb-textarea{width:100%;border:1px solid var(--border);border-radius:4px;padding:.65rem .8rem;font-family:'Source Sans 3',sans-serif;font-size:.91rem;resize:vertical;min-height:82px;background:var(--bg);transition:border-color .2s}
+.fb-textarea:focus{outline:none;border-color:var(--navy);background:#fff}
+.submit-btn{background:var(--navy);color:#fff;border:none;padding:.78rem 2.3rem;border-radius:4px;font-family:'Source Sans 3',sans-serif;font-size:.94rem;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;margin-top:.5rem}
+.submit-btn:hover{background:var(--amber)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.success-msg{display:none;background:#eef7f2;border:1px solid #a3d4b4;border-left:4px solid var(--green);border-radius:4px;padding:.88rem 1.1rem;color:var(--green);font-weight:600;margin-top:1rem}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:.35rem}
+.site-footer{text-align:center;padding:1.5rem;font-size:.75rem;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.site-header{padding:2rem 1.25rem 1.75rem}.lang-switcher{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="load-flag">🇺🇦</div>
+  <div class="load-text">Перекладаємо на українську…</div>
+  <div class="load-sub">Translating to Ukrainian</div>
+  <div class="load-spinner"></div>
+  <div class="load-error" id="loadError">Не вдалося перекласти. Показуємо оригінальний текст.<br><small>Could not translate — showing original text.</small></div>
+</div>
+
+<header class="site-header">
+ <div class="header-inner">
+  <div class="header-top">
+   <div class="header-main">
+    <div class="district-tag" id="pub-district"></div>
+    <h1 class="policy-title" id="pub-title">Шкільна Політика</h1>
+    <div class="policy-meta"><span id="pub-date"></span><span>📄 Огляд Політики</span></div>
+    <a href="#feedbackSection" class="fb-jump-btn" onclick="smoothScroll(event,'feedbackSection')">💬 Поділіться Думкою</a>
+   </div>
+   <div class="lang-switcher">
+    <a class="lang-btn" href="index.html">🇨🇦 EN</a>
+    <span class="lang-btn active">🇺🇦 UK</span>
+    <a class="lang-btn" href="ar.html">🇸🇦 AR</a>
+   </div>
+  </div>
+ </div>
+</header>
+
+<div id="bannerSection"><img id="bannerImg" class="banner-img" src="" alt=""></div>
+
+<main class="main-wrap">
+ <section class="section">
+  <div class="sec-label">Огляд Політики</div>
+  <h2 class="sec-heading">Наш Підхід</h2>
+  <p class="overview-text" id="pub-overview"></p>
+ </section>
+ <section class="section" id="resourcesSection" style="display:none">
+  <div class="sec-label">Документи</div>
+  <h2 class="sec-heading">Ресурси</h2>
+  <div class="resources-grid">
+   <a class="resource-primary" id="primaryDocLink" href="#" target="_blank">
+    <div class="rp-icon" id="primaryDocIcon">📄</div>
+    <div class="rp-body">
+     <div class="rp-label">Документ Політики</div>
+     <div class="rp-title" id="primaryDocTitle"></div>
+     <div class="rp-desc" id="primaryDocDesc"></div>
+    </div>
+    <div class="rp-arrow">→</div>
+   </a>
+   <div class="resource-links" id="pub-links"></div>
+  </div>
+ </section>
+ <section class="section">
+  <div class="sec-label">Ключові Принципи</div>
+  <h2 class="sec-heading">Мета Цієї Політики</h2>
+  <div class="pillars-grid" id="pub-pillars"></div>
+ </section>
+ <section class="section" id="faqSection" style="display:none">
+  <div class="sec-label">Запитання</div>
+  <h2 class="sec-heading" id="pub-faq-title">Часті Запитання</h2>
+  <div class="faq-list" id="pub-faq"></div>
+ </section>
+ <section class="fb-section" id="feedbackSection">
+  <div class="sec-label">Голос Громади</div>
+  <h2 class="sec-heading" id="pub-fb-title">Поділіться Думкою</h2>
+  <p style="color:var(--muted);font-size:.91rem;margin-bottom:1.7rem" id="pub-fb-intro"></p>
+  <form id="feedbackForm" onsubmit="submitFeedback(event)">
+   <div id="fb-questions-render"></div>
+   <button type="submit" class="submit-btn" id="submit-btn">Надіслати Відповідь</button>
+  </form>
+  <div class="success-msg" id="successMsg">✓ Дякуємо — вашу відповідь записано.</div>
+ </section>
+</main>
+
+<footer class="site-footer">
+ <a href="index.html" style="color:var(--muted);font-size:.8rem">← English version</a>
+</footer>
+
+<script>
+const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbwquaEYqksXt63uw-o1Rnd1XD9x46LyDxQ-3DNJWlLKh_xKHsrBJSuJNSR1iphTk0xTKg/exec';
+const TARGET_LANG = 'uk';
+const CACHE_KEY   = 'ph_translated_uk_v2';
+
+async function apiGet(a){try{const r=await fetch(SCRIPT_URL+'?action='+a,{redirect:'follow'});return await r.json();}catch(e){return null;}}
+async function apiPost(b){try{const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(b),redirect:'follow'});return await r.json();}catch(e){return null;}}
+
+function collectTexts(c,fb){
+  const t=[], push=s=>t.push((s||'').trim());
+  push(c.title); push(c.overview);
+  (c.pillars||[]).forEach(p=>{push(p.title);push(p.desc);});
+  if(c.resources?.showPrimary){push(c.resources.primaryTitle);push(c.resources.primaryDesc);}
+  (c.resources?.links||[]).forEach(l=>{push(l.title);push(l.desc);});
+  if(c.faq?.show&&c.faq?.items?.length){push(c.faq.title);c.faq.items.forEach(item=>{push(item.q);push(item.a);});}
+  push(fb.fbTitle); push(fb.fbIntro);
+  (fb.questions||[]).forEach(q=>{
+    push(q.text);
+    if(['radio','checkbox','likert'].includes(q.type))(q.options||[]).forEach(o=>push(o));
+    if(q.type==='rating'){push(q.ratingMin);push(q.ratingMax);}
+  });
+  return t;
+}
+
+function applyTranslations(c,fb,translated){
+  c=JSON.parse(JSON.stringify(c)); fb=JSON.parse(JSON.stringify(fb));
+  let i=0; const get=()=>translated[i++]||'';
+  c.title=get(); c.overview=get();
+  (c.pillars||[]).forEach(p=>{p.title=get();p.desc=get();});
+  if(c.resources?.showPrimary){c.resources.primaryTitle=get();c.resources.primaryDesc=get();}
+  (c.resources?.links||[]).forEach(l=>{l.title=get();l.desc=get();});
+  if(c.faq?.show&&c.faq?.items?.length){c.faq.title=get();c.faq.items.forEach(item=>{item.q=get();item.a=get();});}
+  fb.fbTitle=get(); fb.fbIntro=get();
+  (fb.questions||[]).forEach(q=>{
+    q.text=get();
+    if(['radio','checkbox','likert'].includes(q.type))q.options=q.options.map(()=>get());
+    if(q.type==='rating'){q.ratingMin=get();q.ratingMax=get();}
+  });
+  return {c,fb};
+}
+
+async function init(){
+  try{const cached=sessionStorage.getItem(CACHE_KEY);if(cached){const{c,fb}=JSON.parse(cached);renderPublic(c,fb);hideOverlay();return;}}catch(_){}
+  const data=await apiGet('getAll');
+  if(!data){showError();return;}
+  const rawC=data.content||{}, rawFB=data.feedback||{};
+  const texts=collectTexts(rawC,rawFB);
+  const res=await apiPost({action:'translate',targetLang:TARGET_LANG,texts});
+  let c,fb;
+  if(res?.ok&&res.translated){
+    ({c,fb}=applyTranslations(rawC,rawFB,res.translated));
+    try{sessionStorage.setItem(CACHE_KEY,JSON.stringify({c,fb}));}catch(_){}
+  } else {
+    c=rawC; fb=rawFB; showError();
+  }
+  renderPublic(c,fb);
+  hideOverlay();
+}
+
+function hideOverlay(){const o=document.getElementById('loadingOverlay');o.classList.add('fade-out');setTimeout(()=>o.style.display='none',450);}
+function showError(){document.getElementById('loadError').style.display='block';}
+
+function renderPublic(c,fb){
+  document.getElementById('pub-district').textContent=c.district||'';
+  document.getElementById('pub-title').textContent=c.title||'';
+  document.getElementById('pub-date').textContent=c.date?'📅 '+c.date:'';
+  document.getElementById('pub-overview').textContent=c.overview||'';
+  const banner=c.banner||{};
+  if(banner.show&&banner.url){const img=document.getElementById('bannerImg');img.src=banner.url;img.alt=banner.alt||'';img.style.maxHeight=(banner.height||280)+'px';document.getElementById('bannerSection').classList.add('show');}
+  const res=c.resources||{};
+  document.getElementById('resourcesSection').style.display=(res.showPrimary||(res.links?.length>0))?'':'none';
+  const pl=document.getElementById('primaryDocLink');
+  pl.style.display=res.showPrimary?'flex':'none';
+  if(res.showPrimary){pl.href=res.primaryUrl||'#';document.getElementById('primaryDocIcon').textContent=res.primaryIcon||'📄';document.getElementById('primaryDocTitle').textContent=res.primaryTitle||'';document.getElementById('primaryDocDesc').textContent=res.primaryDesc||'';}
+  document.getElementById('pub-links').innerHTML=(res.links||[]).map(l=>`<a class="resource-link" href="${l.url||'#'}" target="_blank"><div class="rl-icon">${l.icon||'🔗'}</div><div class="rl-body"><div class="rl-title">${l.title||''}</div>${l.desc?`<div class="rl-desc">${l.desc}</div>`:''}</div></a>`).join('');
+  document.getElementById('pub-pillars').innerHTML=(c.pillars||[]).map(p=>`<div class="pillar"><div class="pillar-icon">${p.icon||''}</div><div class="pillar-title">${p.title||''}</div><div class="pillar-desc">${p.desc||''}</div></div>`).join('');
+  const faq=c.faq||{};
+  document.getElementById('faqSection').style.display=(faq.show&&faq.items?.length)?'':'none';
+  document.getElementById('pub-faq-title').textContent=faq.title||'';
+  document.getElementById('pub-faq').innerHTML=(faq.items||[]).map((item,i)=>`<div class="faq-item" id="fi-${i}"><div class="faq-q" onclick="document.getElementById('fi-${i}').classList.toggle('open')"><span>${item.q}</span><span class="faq-chevron">▼</span></div><div class="faq-a">${item.a}</div></div>`).join('');
+  document.getElementById('pub-fb-title').textContent=fb.fbTitle||'';
+  document.getElementById('pub-fb-intro').textContent=fb.fbIntro||'';
+  renderForm(fb.questions||[]);
+}
+
+function renderForm(qs){
+  document.getElementById('fb-questions-render').innerHTML=qs.map((q,i)=>`<div class="q-block"><div class="q-text">${i+1}. ${q.text}</div>${qInput(q)}</div>`).join('');
+}
+function qInput(q){
+  if(q.type==='radio')    return `<ul class="opt-list">${(q.options||[]).map(o=>`<li><label><input type="radio" name="${q.id}" value="${o}"> ${o}</label></li>`).join('')}</ul>`;
+  if(q.type==='checkbox') return `<ul class="opt-list">${(q.options||[]).map(o=>`<li><label><input type="checkbox" name="${q.id}" value="${o}"> ${o}</label></li>`).join('')}</ul>`;
+  if(q.type==='rating')   return `<div class="rating-row">${[1,2,3,4,5].map(n=>`<button type="button" class="r-btn" data-q="${q.id}" data-v="${n}" onclick="pickRating(this)">${n}</button>`).join('')}</div><div class="r-labels"><span>${q.ratingMin||''}</span><span>${q.ratingMax||''}</span></div><input type="hidden" name="${q.id}" id="rh-${q.id}">`;
+  if(q.type==='likert')   return `<div class="likert-row">${(q.options||[]).map(o=>`<label class="likert-opt"><input type="radio" name="${q.id}" value="${o}"><div class="likert-btn">${o}</div></label>`).join('')}</div>`;
+  if(q.type==='text')     return `<textarea class="fb-textarea" name="${q.id}" placeholder="Ваша відповідь..."></textarea>`;
+  return '';
+}
+function pickRating(btn){document.querySelectorAll(`[data-q="${btn.dataset.q}"]`).forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('rh-'+btn.dataset.q).value=btn.dataset.v;}
+
+async function submitFeedback(e){
+  e.preventDefault();
+  const form=e.target,btn=document.getElementById('submit-btn');
+  const d=await apiGet('getAll');
+  const qs=d?.feedback?.questions||[];
+  const rec={timestamp:new Date().toISOString(),lang:'uk',answers:{}};
+  qs.forEach(q=>{
+    if(q.type==='checkbox')rec.answers[q.id]={question:q.text,type:q.type,value:[...form.querySelectorAll(`[name="${q.id}"]:checked`)].map(el=>el.value)};
+    else if(q.type==='text'){const ta=form.querySelector(`[name="${q.id}"]`);rec.answers[q.id]={question:q.text,type:q.type,value:ta?ta.value:''};}
+    else{const el=form.querySelector(`[name="${q.id}"]:checked`)||form.querySelector(`[name="${q.id}"]`);rec.answers[q.id]={question:q.text,type:q.type,value:el?el.value:''};}
+  });
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Надсилання...';
+  const r=await apiPost({action:'submitResponse',payload:rec});
+  if(r?.ok){form.style.display='none';document.getElementById('successMsg').style.display='block';}
+  else{btn.disabled=false;btn.textContent='Надіслати Відповідь';alert('Щось пішло не так. Спробуйте ще раз.');}
+}
+
+function smoothScroll(e,id){e.preventDefault();document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});}
+init();
+</script>
+</body>
+</html>

@@ -107,11 +107,23 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tex
 .site-header::before{content:'';position:absolute;top:-60px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.03)}
 .site-header::after{content:'';position:absolute;bottom:-100px;left:30px;width:240px;height:240px;border-radius:50%;background:rgba(196,98,13,.12)}
 .header-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.header-main{flex:1}
+.lang-switcher{display:flex;gap:.4rem;flex-shrink:0;padding-top:.25rem}
+.lang-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;padding:.32rem .65rem;border-radius:4px;font-size:.75rem;font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s;display:flex;align-items:center;gap:.3rem;font-family:'Source Sans 3',sans-serif;letter-spacing:.02em}
+.lang-btn:hover{background:rgba(255,255,255,.25)}
+.lang-btn.active{background:var(--amber);border-color:var(--amber)}
 .district-tag{font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber2);margin-bottom:.6rem}
 .policy-title{font-family:'Lora',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.2;margin-bottom:.5rem}
 .policy-meta{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.84rem;color:rgba(255,255,255,.52);margin-top:.8rem}
 .fb-jump-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;background:var(--amber);color:#fff;padding:.65rem 1.4rem;border-radius:5px;font-weight:700;font-size:.9rem;text-decoration:none;letter-spacing:.02em;transition:background .2s,transform .15s;width:fit-content}
 .fb-jump-btn:hover{background:#e07520;transform:translateY(-1px)}
+
+/* reorder buttons */
+.reorder-btns{display:flex;flex-direction:column;gap:.18rem;flex-shrink:0}
+.reorder-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.7);width:26px;height:26px;border-radius:3px;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:background .12s}
+.reorder-btn:hover{background:rgba(255,255,255,.22);color:#fff}
+.reorder-btn:disabled{opacity:.2;cursor:not-allowed}
 
 /* ── BANNER IMAGE ── */
 #bannerSection{display:none}
@@ -366,13 +378,22 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tex
 <!-- PUBLIC PAGE -->
 <header class="site-header">
  <div class="header-inner">
-  <div class="district-tag" id="pub-district">Loading...</div>
-  <h1 class="policy-title" id="pub-title">Student Cell Phone Policy</h1>
-  <div class="policy-meta">
-   <span id="pub-date">📅</span>
-   <span>📄 Policy Overview</span>
+  <div class="header-top">
+   <div class="header-main">
+    <div class="district-tag" id="pub-district">Loading...</div>
+    <h1 class="policy-title" id="pub-title">Student Cell Phone Policy</h1>
+    <div class="policy-meta">
+     <span id="pub-date">📅</span>
+     <span>📄 Policy Overview</span>
+    </div>
+    <a href="#feedbackSection" class="fb-jump-btn" onclick="smoothScroll(event,'feedbackSection')">💬 Share Your Feedback</a>
+   </div>
+   <div class="lang-switcher">
+    <span class="lang-btn active">🇨🇦 EN</span>
+    <a class="lang-btn" href="uk.html">🇺🇦 UK</a>
+    <a class="lang-btn" href="ar.html">🇸🇦 AR</a>
+   </div>
   </div>
-  <a href="#feedbackSection" class="fb-jump-btn" onclick="smoothScroll(event,'feedbackSection')">💬 Share Your Feedback</a>
  </div>
 </header>
 
@@ -835,21 +856,27 @@ async function saveFaq(){
 
 // ── FEEDBACK FORM EDITOR ──────────────────────────────────────────────────────
 function renderQEditor(){
-  document.getElementById('questions-editor').innerHTML=(fb.questions||[]).map((q,i)=>`
-    <div class="card-box">
-      <div class="card-box-header">
-        <span class="card-num">Q${i+1}</span>
-        <select class="q-type" onchange="updQType(${i},this.value)">
-          <option value="radio"    ${q.type==='radio'   ?'selected':''}>Multiple Choice</option>
-          <option value="checkbox" ${q.type==='checkbox'?'selected':''}>Checkboxes</option>
-          <option value="rating"   ${q.type==='rating'  ?'selected':''}>Rating 1 to 5</option>
-          <option value="likert"   ${q.type==='likert'  ?'selected':''}>Likert Scale</option>
-          <option value="text"     ${q.type==='text'    ?'selected':''}>Open Text</option>
-        </select>
-        <button class="del-btn" onclick="rmQ(${i})">Remove</button>
+  document.getElementById('questions-editor').innerHTML=(fb.questions||[]).map((q,i,arr)=>`
+    <div class="card-box" style="display:flex;gap:.6rem;align-items:flex-start">
+      <div class="reorder-btns">
+        <button class="reorder-btn" onclick="moveQ(${i},-1)" ${i===0?'disabled':''} title="Move up">▲</button>
+        <button class="reorder-btn" onclick="moveQ(${i},1)"  ${i===arr.length-1?'disabled':''} title="Move down">▼</button>
       </div>
-      <input class="ap-input" value="${q.text}" onchange="updQ(${i},'text',this.value)" placeholder="Question text" style="margin-bottom:.45rem">
-      ${optsEditor(q,i)}
+      <div style="flex:1">
+        <div class="card-box-header">
+          <span class="card-num">Q${i+1}</span>
+          <select class="q-type" onchange="updQType(${i},this.value)">
+            <option value="radio"    ${q.type==='radio'   ?'selected':''}>Multiple Choice</option>
+            <option value="checkbox" ${q.type==='checkbox'?'selected':''}>Checkboxes</option>
+            <option value="rating"   ${q.type==='rating'  ?'selected':''}>Rating 1 to 5</option>
+            <option value="likert"   ${q.type==='likert'  ?'selected':''}>Likert Scale</option>
+            <option value="text"     ${q.type==='text'    ?'selected':''}>Open Text</option>
+          </select>
+          <button class="del-btn" onclick="rmQ(${i})">Remove</button>
+        </div>
+        <input class="ap-input" value="${q.text}" onchange="updQ(${i},'text',this.value)" placeholder="Question text" style="margin-bottom:.45rem">
+        ${optsEditor(q,i)}
+      </div>
     </div>`).join('');
 }
 function optsEditor(q,i){
@@ -857,6 +884,13 @@ function optsEditor(q,i){
   if(q.type==='text') return `<p style="font-size:.75rem;color:rgba(255,255,255,.3)">Open text — no options needed.</p>`;
   if(q.type==='likert') return `<p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:.4rem">Edit scale labels below (left to right):</p><div class="opts-editor">${(q.options||[]).map((o,oi)=>`<div class="opt-row"><input class="opt-inp" value="${o}" onchange="updOpt(${i},${oi},this.value)" placeholder="Label"><button class="sm-del" onclick="rmOpt(${i},${oi})">x</button></div>`).join('')}<button class="sm-add" onclick="addOpt(${i})">+ Add label</button></div>`;
   return `<div class="opts-editor">${(q.options||[]).map((o,oi)=>`<div class="opt-row"><input class="opt-inp" value="${o}" onchange="updOpt(${i},${oi},this.value)"><button class="sm-del" onclick="rmOpt(${i},${oi})">x</button></div>`).join('')}<button class="sm-add" onclick="addOpt(${i})">+ Add option</button></div>`;
+}
+function moveQ(i, dir){
+  const qs = fb.questions;
+  const j = i + dir;
+  if(j < 0 || j >= qs.length) return;
+  [qs[i], qs[j]] = [qs[j], qs[i]];
+  renderQEditor();
 }
 function updQ(i,k,v){ if(fb.questions[i]) fb.questions[i][k]=v; }
 function updQType(i,t){ if(!fb.questions[i]) return; fb.questions[i].type=t; if((t==='radio'||t==='checkbox')&&!fb.questions[i].options) fb.questions[i].options=['Option 1']; if(t==='likert') fb.questions[i].options=['Strongly Disagree','Disagree','Neutral','Agree','Strongly Agree']; renderQEditor(); }
